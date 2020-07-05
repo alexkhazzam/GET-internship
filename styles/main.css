@@ -205,7 +205,7 @@ ul {
 }
 
 .next-page,
-.last-page {
+.previous-page {
   color: blue;
   border: 1px solid #a0a0a0;
   margin-top: 10px;
@@ -216,19 +216,15 @@ ul {
 }
 
 .next-page:hover,
-.last-page:hover,
+.previous-page:hover,
 .page-number {
   border-color: #a0a0a0;
   background-color: #a0a0a033;
 }
 
 .next-page {
-  margin-left: 45px;
-  margin-right: 0px;
-}
-
-.last-page {
   margin-left: 0px;
+  margin-right: 0px;
 }
 
 .page-number {
@@ -245,7 +241,16 @@ ul {
   background-color: white;
 }
 
-#last-page {
+#previous-page {
   text-align: center;
   font-weight: bold;
+}
+
+#total-pages {
+  text-align: center;
+  font-weight: bold;
+}
+
+.previous-page {
+  margin-left: 30px;
 }

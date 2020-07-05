@@ -4,13 +4,14 @@ const clearBtn = document.querySelector("#clear");
 const search = document.querySelector("#search");
 const itemInfo = document.querySelector("#item-information");
 let userInput = document.querySelector("input");
-const lastPage = document.querySelector(".last-page");
+const previousPage = document.querySelector(".previous-page");
 const h1 = document.querySelector("#search-header");
 const pageNumber = document.querySelector(".page-number");
 const nextPage = document.querySelector(".next-page");
 const searchResults = document.querySelector("#search-results");
 const closeAllBtn = document.querySelector("#close-all");
 const information = document.querySelector("#information");
+const totalPages = document.querySelector("#total-pages");
 let pageNums = 1;
 let objCount = 0;
 let pageCount = 1;
@@ -66,7 +67,7 @@ async function navigateServer(perPage, pageNumber) {
   endModal();
   if (responseData.total_count / 100 > 1) {
     nextPage.style.display = "inline-block";
-    lastPage.style.display = "inline-block";
+    previousPage.style.display = "inline-block";
   }
   searchResults.style.display = "block";
   searchResults.style.display = "block";
@@ -205,9 +206,10 @@ searchBtn.addEventListener("click", () => {
     alert("Enter a valid input.");
   } else {
     pageNums = 1;
+    totalPages.textContent = "";
     pageNumber.textContent = "Page: 1";
     nextPage.style.display = "none";
-    lastPage.style.display = "none";
+    previousPage.style.display = "none";
     loading.style.display = "block";
     navigateServer(100, 1); //begin http request
   }
@@ -217,6 +219,7 @@ clearBtn.addEventListener("click", () => {
   //clears all the items rendered from search, all items rendered by clicking them, and takes them away from the DOM
   clearBtn.style.display = "none";
   pageNums = 1;
+  totalPages.textContent = "";
   pageNumber.textContent = "Page: 1";
   itemInfo.textContent = "";
   userInput.value = "";
@@ -233,11 +236,13 @@ userInput.addEventListener("keypress", (e) => {
 });
 
 nextPage.addEventListener("click", () => {
+  //forwarding request to server for next page count
   let pageCount = responseData.total_count / 100;
+  totalPages.textContent = `Page Count: ${Math.round(pageCount)}`;
   if (pageNums === pageCount) {
     return;
   } else {
-    pageNums++;
+    pageNums = pageNums + 1;
     pageNumber.textContent = `Page: ${Math.round(pageNums)}`;
     searchResults.style.display = "none";
     h1.style.display = "none";
@@ -248,14 +253,18 @@ nextPage.addEventListener("click", () => {
   }
 });
 
-lastPage.addEventListener("click", () => {
+previousPage.addEventListener("click", () => {
   let pageCount = responseData.total_count / 100;
-  console.log(pageCount);
-  pageNumber.textContent = `Page: ${Math.round(pageCount)}`;
+  if (pageNums === 1) {
+    return;
+  }
+  pageNums = pageNums - 1;
+  pageNumber.textContent = `Page: ${pageNums}`;
   searchResults.style.display = "none";
   h1.style.display = "none";
+  totalPages.textContent = `Page Count: ${Math.round(pageCount)}`;
   loading.style.display = "block";
   itemInfo.textContent = "";
   information.style.display = "none";
-  navigateServer(100, pageCount);
+  navigateServer(100, pageNums); //forwarding request to server with the last page count
 });
