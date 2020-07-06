@@ -55,7 +55,7 @@ function sendHttpRequest(method, url) {
   return promise;
 }
 
-async function navigateServer(perPage, pageNumber) {
+async function navigateServer(perPage, pageNumber, pageNumMargin) {
   searchResults.style.display = "none";
   h1.style.display = "none";
   ul.textContent = "";
@@ -65,11 +65,16 @@ async function navigateServer(perPage, pageNumber) {
     `https://api.github.com/search/repositories?q=${userInput.value.trim()}&sort=stars&order=des&per_page=${perPage}&page=${pageNumber}` //100 per page seems to be the max...CPU will blow up--doesn't go more. Need to parse JSON data for every other page until there is no more data left
   );
   endModal();
+  const pageNum = document.querySelector(".page-number");
   if (responseData.total_count / 100 > 1) {
     nextPage.style.display = "inline-block";
-    previousPage.style.display = "inline-block";
+    pageNum.style.marginLeft = "100px";
   }
-  searchResults.style.display = "block";
+  if (pageNumMargin) {
+    pageNum.style.marginLeft = "0px";
+  } else {
+    pageNum.style.marginLeft = "100px";
+  }
   searchResults.style.display = "block";
   h1.style.display = "block";
   for (let i = 0; i < responseData.items.length; i++) {
@@ -205,11 +210,11 @@ searchBtn.addEventListener("click", () => {
   if (userInput.value.trim() === "") {
     alert("Enter a valid input.");
   } else {
+    previousPage.style.display = "none";
     pageNums = 1;
     totalPages.textContent = "";
     pageNumber.textContent = "Page: 1";
     nextPage.style.display = "none";
-    previousPage.style.display = "none";
     loading.style.display = "block";
     navigateServer(100, 1); //begin http request
   }
@@ -236,6 +241,8 @@ userInput.addEventListener("keypress", (e) => {
 });
 
 nextPage.addEventListener("click", () => {
+  previousPage.style.display = "inline-block";
+  let pageNumMargin = true;
   //forwarding request to server for next page count
   let pageCount = responseData.total_count / 100;
   totalPages.textContent = `Page Count: ${Math.round(pageCount)}`;
@@ -249,16 +256,21 @@ nextPage.addEventListener("click", () => {
     loading.style.display = "block";
     itemInfo.textContent = "";
     information.style.display = "none";
-    navigateServer(100, pageNums);
+    navigateServer(100, pageNums, pageNumMargin);
   }
 });
 
 previousPage.addEventListener("click", () => {
+  let pageNumberMarg;
+  pageNums = pageNums - 1;
   let pageCount = responseData.total_count / 100;
   if (pageNums === 1) {
-    return;
+    previousPage.style.display = "none";
+    pageNumberMarg = false;
+  } else {
+    previousPage.style.display = "inline-block";
+    pageNumberMarg = true;
   }
-  pageNums = pageNums - 1;
   pageNumber.textContent = `Page: ${pageNums}`;
   searchResults.style.display = "none";
   h1.style.display = "none";
@@ -266,5 +278,5 @@ previousPage.addEventListener("click", () => {
   loading.style.display = "block";
   itemInfo.textContent = "";
   information.style.display = "none";
-  navigateServer(100, pageNums); //forwarding request to server with the last page count
+  navigateServer(100, pageNums, pageNumberMarg); //forwarding request to server with the last page count
 });
