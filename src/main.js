@@ -65,6 +65,9 @@ async function navigateServer(perPage, pageNumber, pageNumMargin) {
     `https://api.github.com/search/repositories?q=${userInput.value.trim()}&sort=stars&order=des&per_page=${perPage}&page=${pageNumber}` //100 per page seems to be the max...CPU will blow up--doesn't go more. Need to parse JSON data for every other page until there is no more data left
   );
   endModal();
+  if (responseData.total_count === 0) {
+    appendErrorToDOM();
+  }
   const pageNum = document.querySelector(".page-number");
   if (responseData.total_count / 100 > 1) {
     nextPage.style.display = "inline-block";
@@ -195,6 +198,7 @@ function appendErrorToDOM() {
   ul.textContent = "";
   const li = document.createElement("li");
   li.textContent = "No Results Found";
+  pageNumber.style.display = "none"
   h1.style.display = "none";
   information.style.display = "none";
   ul.append(li);
