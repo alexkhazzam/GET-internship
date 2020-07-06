@@ -198,7 +198,7 @@ function appendErrorToDOM() {
   ul.textContent = "";
   const li = document.createElement("li");
   li.textContent = "No Results Found";
-  pageNumber.style.display = "none"
+  pageNumber.style.display = "none";
   h1.style.display = "none";
   information.style.display = "none";
   ul.append(li);
@@ -214,6 +214,8 @@ searchBtn.addEventListener("click", () => {
   if (userInput.value.trim() === "") {
     alert("Enter a valid input.");
   } else {
+    nextPage.style.display = "inline-block";
+    pageNumber.style.display = "inline-block";
     previousPage.style.display = "none";
     pageNums = 1;
     totalPages.textContent = "";
